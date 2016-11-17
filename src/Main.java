@@ -135,6 +135,8 @@ public class Main {
 		Integer indexTo = indexFrom + contenidoOriginal.substring(indexFrom).indexOf("{");
 		String cabeceraOriginal = contenidoOriginal.substring(indexFrom, indexTo);
 		String cabeceraNueva = null;
+		/* Si se requiere agregar Serializable y no existe el import, se agrega */
+		String importLine = interfaces.contains("Serializable") && !contenidoOriginal.contains("import java.io.Serializable;")?"import java.io.Serializable;":"";
 		if (cabeceraOriginal.contains("implements")){
 			Boolean huboCambio = Boolean.FALSE;
 			cabeceraOriginal = cabeceraOriginal.replaceAll("\t", " ");
@@ -167,6 +169,13 @@ public class Main {
 			}
 			ints = ints.substring(0,ints.length()-2);
 			cabeceraNueva = cabeceraOriginal + ints + " ";
+		}
+		if (!importLine.isEmpty()){
+			Integer desde = contenidoOriginal.indexOf("package");
+			Integer hasta = contenidoOriginal.indexOf(";")+1;
+			String packageOriginal = contenidoOriginal.substring(desde,hasta);
+			String packageNuevo = packageOriginal + "\n\n" + importLine;
+			contenidoOriginal = contenidoOriginal.replace(packageOriginal, packageNuevo);
 		}
 		return contenidoOriginal.replace(cabeceraOriginal, cabeceraNueva);
 	}
