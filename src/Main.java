@@ -16,7 +16,7 @@ import java.util.List;
 			2- Path donde está la lista de interfaces a agregar (lista separada por enters)<br>
 			3- Path donde está la lista de clases a no procesar (lista separada por enters)<br>
 	En caso que la clase que se está procesando ya posee la interfaz, no la agrega.<br><br>
-	ACLARACIÓN: Si una de las interfaces que se desea implementar es "Serializable", se requerirá luego agregar manualmente el import y generar el serial version ID
+	ACLARACIÓN: Si una de las interfaces que se desea implementar es "Serializable", se requerirá generar manualmente el serial version ID
 	
  * @author jetchart - 17/11/2016
  *
