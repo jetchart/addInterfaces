@@ -72,7 +72,7 @@ public class Main {
 	 * 
 	 * @return
 	 */
-	public static Collection<String> getFilesFromFolder(Collection<String> colFilesPath, String rootFolder, Boolean recursive, String prefix){
+	private static Collection<String> getFilesFromFolder(Collection<String> colFilesPath, String rootFolder, Boolean recursive, String prefix){
     	File f = new File(rootFolder);
     	File[] ficheros = f.listFiles();
     	for (File file : ficheros){
@@ -95,7 +95,7 @@ public class Main {
 	 * @return
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static String leerArchivo(String filePath, String separator) throws UnsupportedEncodingException{
+	private static String leerArchivo(String filePath, String separator) throws UnsupportedEncodingException{
 		StringBuffer retorno = new StringBuffer();
 	    FileReader f;
 	    BufferedReader b;
