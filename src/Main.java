@@ -19,7 +19,7 @@ import java.util.List;
 			2- Path donde está la lista de interfaces a agregar (lista separada por enters)<br>
 			3- Path donde está la lista de clases a no procesar (lista separada por enters)<br>
 	En caso que la clase que se está procesando ya posee la interfaz, no la agrega.<br><br>
-	ACLARACIÓN: Si una de las interfaces que se desea implementar es "Serializable", se requerirá generar manualmente el serial version ID
+	ACLARACIÓN: Si una de las interfaces agregadas es "Serializable", se agrega además el import, y la variable serialVersionUID (con valor 1). 
 	
  * @author jetchart - 17/11/2016
  *
@@ -192,6 +192,11 @@ public class Main {
 				System.out.print(i + " ");
 			}
 			System.out.println("");
+			/* Si se agregó "Serializable" se crea la linea para definir la variable serialVersionUID */
+			if (intsAgregadas.contains("Serializable")){
+				cabeceraOriginal += "{";
+				cabeceraNueva += "{\n\n\tprivate static final long serialVersionUID = 1L;\n";
+			}
 			return contenidoOriginal.replace(cabeceraOriginal, cabeceraNueva);
 		}
 		return contenidoOriginal;
