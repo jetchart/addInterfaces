@@ -54,7 +54,6 @@ public class Main {
 			if (!contenidoOriginal.equals(contenidoNuevo)){
 				writeFile(fullPath, contenidoNuevo);
 			}
-			
 		}
 		System.out.println("*************************");
 		System.out.println("  Fin del procesamiento");
@@ -68,7 +67,7 @@ public class Main {
 	 * @param colFilesPath		Almacena los archivos encontrados (se requiere cuando recursive=TRUE, ya que irá acumulando los archivos)
 	 * @param rootFolder		Ruta desde donde se inicia la búsqueda de archivos
 	 * @param recursive 		Si es TRUE, busca tambien dentro de los subdirectorios
-	 * @param prefix			Procesa los archivos .java que empiencen con el prefijo indicado
+	 * @param prefix			Procesa los archivos .java que empiecen con el prefijo indicado
 	 * 
 	 * @return
 	 */
@@ -88,7 +87,7 @@ public class Main {
     }
 	
 	/**
-	 * Leer el archivo indicado por parámetro. Cada linea que procesa la separa utilizando el "separator"
+	 * Lee el archivo indicado por parámetro. Cada linea que procesa la separa utilizando el "separator"
 	 * 
 	 * @param filePath
 	 * @param separator
