@@ -1,9 +1,12 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +52,6 @@ public class Main {
 			String contenidoOriginal = leerArchivo(fullPath,"\n");
 			String contenidoNuevo = addInterfaces(className, contenidoOriginal);
 			if (!contenidoOriginal.equals(contenidoNuevo)){
-				System.out.println(className);
 				writeFile(fullPath, contenidoNuevo);
 			}
 			
@@ -91,20 +93,20 @@ public class Main {
 	 * @param filePath
 	 * @param separator
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 */
-	public static String leerArchivo(String filePath, String separator){
+	public static String leerArchivo(String filePath, String separator) throws UnsupportedEncodingException{
 		StringBuffer retorno = new StringBuffer();
 	    FileReader f;
 	    BufferedReader b;
 	    String cadena;
 		try {
 			/* Creo FileReader con la ruta completa del file recibido por parametro */
-			f = new FileReader(filePath);
-		    b = new BufferedReader(f);
+		    b = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "8859_1"));
 		    /* Recorro el archivo */ 
 		    while((cadena = b.readLine())!=null) {
 		    	/* Agrego contenido al StringBuffer que será devuelto */
-		    	retorno.append(cadena).append(separator);
+		    	retorno.append(new String(cadena)).append(separator);
 		    }
 		    b.close();
 		} catch (Exception e) {
@@ -135,12 +137,13 @@ public class Main {
 		Integer indexTo = indexFrom + contenidoOriginal.substring(indexFrom).indexOf("{");
 		String cabeceraOriginal = contenidoOriginal.substring(indexFrom, indexTo);
 		String cabeceraNueva = null;
+		Collection<String> intsAgregadas = new ArrayList<String>();
 		/* Si se requiere agregar Serializable y no existe el import, se agrega */
-		String importLine = interfaces.contains("Serializable") && !contenidoOriginal.contains("import java.io.Serializable;")?"import java.io.Serializable;":"";
+		String importLine = !contenidoOriginal.contains("serialVersionUID") && interfaces.contains("Serializable") && !contenidoOriginal.contains("import java.io.Serializable;")?"import java.io.Serializable;":"";
 		if (cabeceraOriginal.contains("implements")){
 			Boolean huboCambio = Boolean.FALSE;
-			cabeceraOriginal = cabeceraOriginal.replaceAll("\t", " ");
-			Collection<String> intsOriginales = new ArrayList<>(Arrays.asList(cabeceraOriginal.substring(cabeceraOriginal.indexOf("implements")).replace("implements ", "").replace("implements", "").replace(" ", "").split(",")));
+			String cabeceraOriginalSinTabs = cabeceraOriginal.replaceAll("\t", " ");
+			Collection<String> intsOriginales = new ArrayList<>(Arrays.asList(cabeceraOriginalSinTabs.substring(cabeceraOriginalSinTabs.indexOf("implements")).replace("implements ", "").replace("implements", "").replace(" ", "").split(",")));
 			for (String i : interfaces){
 				if (!intsOriginales.contains(i)){
 					/* Si se está intentando agregar la interfaz "Serializable" pero ya se definió un serialVersionUID no 
@@ -149,6 +152,7 @@ public class Main {
 					if (!i.equals("Serializable") || (i.equals("Serializable") && !contenidoOriginal.contains("serialVersionUID"))){
 						huboCambio = Boolean.TRUE;
 						intsOriginales.add(i);
+						intsAgregadas.add(i);
 					}
 				}
 			}
@@ -165,7 +169,10 @@ public class Main {
 		}else{
 			String ints = " implements ";
 			for (String i : interfaces){
-				ints += i + ", ";
+				if (!i.equals("Serializable") || (i.equals("Serializable") && !contenidoOriginal.contains("serialVersionUID"))){
+					ints += i + ", ";
+					intsAgregadas.add(i);
+				}
 			}
 			ints = ints.substring(0,ints.length()-2);
 			cabeceraNueva = cabeceraOriginal + ints + " ";
@@ -177,7 +184,17 @@ public class Main {
 			String packageNuevo = packageOriginal + "\n\n" + importLine;
 			contenidoOriginal = contenidoOriginal.replace(packageOriginal, packageNuevo);
 		}
-		return contenidoOriginal.replace(cabeceraOriginal, cabeceraNueva);
+		
+		/* Muestro la clase y las interfaces agregadas */
+		if (!intsAgregadas.isEmpty()){
+			System.out.print(className + " --> ");
+			for (String i : intsAgregadas){
+				System.out.print(i + " ");
+			}
+			System.out.println("");
+			return contenidoOriginal.replace(cabeceraOriginal, cabeceraNueva);
+		}
+		return contenidoOriginal;
 	}
 	
 	/**
@@ -188,10 +205,8 @@ public class Main {
 	 * @throws IOException
 	 */
 	private static void writeFile(String filePpath, String content) throws IOException{
-		FileWriter fichero = new FileWriter(filePpath);
-		PrintWriter pw = new PrintWriter(fichero);
+		PrintWriter pw = new PrintWriter(new File(filePpath), "8859_1");
 		pw.print(content);
 		pw.close();
-		fichero.close();
 	}
 }
